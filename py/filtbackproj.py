@@ -1,3 +1,5 @@
+"""This script defines functions to perform filtered backprojection. At the end of the file, the functions are used to run an example."""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image, ImageChops
@@ -101,22 +103,22 @@ def projFilter(sino):
         
 def backproject(sinogram, theta):
     """Backprojection function. 
-    inputs:  sinogram - [n x m] numpy array where n is the number of projections and m the number of angles
+    inputs:  sinogram - [n x m] numpy array where n is the number of projections (detectors) and m the number of angles
              theta - vector of length m denoting the angles represented in the sinogram
-    output: backprojArray - [n x n] backprojected 2-D numpy array"""
-    imageLen = sinogram.shape[0]
-    reconMatrix = np.zeros((imageLen, imageLen))
+    output: backprojArray - [n x n] backprojected 2-D numpy array. LS comment: because we return nxn image, the number of detectors we send in = number of pixels we return."""
+    imageLen = sinogram.shape[0] # length of image will be same length as number of detectors we send in
+    reconMatrix = np.zeros((imageLen, imageLen)) # initialize array to store image
     
     x = np.arange(imageLen)-imageLen/2 #create coordinate system centered at (x,y = 0,0)
     y = x.copy()
-    X, Y = np.meshgrid(x, y)
+    X, Y = np.meshgrid(x, y) # X and Y are 2D arrays that represent the coordintes of each pixel in the image
 
-    plt.ion()
+    plt.ion() # interactive plot to see recon as it happens
     fig2, ax = plt.subplots()
     im = plt.imshow(reconMatrix, cmap='gray')
 
-    theta = theta*np.pi/180
-    numAngles = len(theta)
+    theta = theta*np.pi/180 # convert view angles (theta) to radians
+    numAngles = len(theta) # total number of view angles
 
     for n in range(numAngles):
         Xrot = X*np.sin(theta[n])-Y*np.cos(theta[n]) #determine rotated x-coordinate about origin in mesh grid form
